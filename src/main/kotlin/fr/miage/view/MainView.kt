@@ -47,7 +47,7 @@ class MainView {
                 board.evolve()
                 boardView.repaint()
             }
-        },1000, 1000)
+        },50, 50)
     }
 }
 

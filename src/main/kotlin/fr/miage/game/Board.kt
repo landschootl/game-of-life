@@ -1,5 +1,7 @@
 package fr.miage.game
 
+import java.util.*
+
 
 /**
  * Board of the game
@@ -17,8 +19,9 @@ class Board(val dimension: Int, nbAlive: Int) {
      * and add it to the livingCells list
      */
     init {
+        val random = Random()
         (0 until nbAlive).forEach {
-            TODO()
+            livingCells.add(random.nextInt(dimension) to random.nextInt(dimension))
         }
     }
 
@@ -30,7 +33,7 @@ class Board(val dimension: Int, nbAlive: Int) {
      *
      * @return if the cell in parameter is alive (true) or dead (false)
      */
-    fun isAlive(x: Int, y: Int): Boolean = TODO()
+    fun isAlive(x: Int, y: Int): Boolean = livingCells.contains(x to y)
 
 
     /**
@@ -46,7 +49,7 @@ class Board(val dimension: Int, nbAlive: Int) {
     fun getNeighbors(cell: Cell): List<Cell> =
             (-1..1).flatMap { x ->
                 (-1..1).map { y ->
-                    TODO()
+                    cell - (x to y)
                 }
             } - cell
 
@@ -54,15 +57,24 @@ class Board(val dimension: Int, nbAlive: Int) {
     /**
      * Extension to calculate the difference between a cell and another one
      */
-    operator fun Cell.minus(other: Cell): Cell = TODO()
+    operator fun Cell.minus(other: Cell): Cell = first - other.first to second - other.second
 
 
     /**
      * Run an iteration of the game of life
      */
     fun evolve() {
-
-        TODO()
+        var newLivingCells: MutableList<Cell> = mutableListOf()
+        (0..livingCells.size).forEach { x ->
+            (0..livingCells.size).forEach { y ->
+                var nbAliveNeighbors = getNeighbors(x to y).filter {isAlive(it.first,it.second)}.size
+                var currentCellIsAlive = isAlive(x, y)
+                if(getNextState(nbAliveNeighbors, currentCellIsAlive)){
+                    newLivingCells.add(x to y)
+                }
+            }
+        }
+        livingCells = newLivingCells
     }
 
 
@@ -75,7 +87,12 @@ class Board(val dimension: Int, nbAlive: Int) {
      *
      * @return the new state of the cell - true if it alive - else false
      */
-    fun getNextState(nbAliveNeighbors: Int, currentCellIsAlive: Boolean): Boolean = TODO()
+    fun getNextState(nbAliveNeighbors: Int, currentCellIsAlive: Boolean): Boolean =
+        when (nbAliveNeighbors) {
+            3 -> true
+            2 -> currentCellIsAlive
+            else -> false
+        }
 
 
 }
